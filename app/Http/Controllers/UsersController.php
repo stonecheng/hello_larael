@@ -8,6 +8,17 @@ use App\Models\User;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth',[
+            'except' => ['show','create','store']
+        ]);
+
+        $this->middleware('guest',[
+            'only' => ['create']
+        ]);
+    }
+
     public function create() {
         return view('users.create');
     }
@@ -29,7 +40,36 @@ class UsersController extends Controller
             'password' => bcrypt($request->password)
         ]);
 
-        session()->flash('success','»¶Ó­£¬Äú½«ÔÚÕâÀï¿ªÆôÒ»¶ÎĞÂµÄÂÃ³Ì~');
+        session()->flash('success','ï¿½ï¿½Ó­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿ªï¿½ï¿½Ò»ï¿½ï¿½ï¿½Âµï¿½ï¿½Ã³ï¿½~');
         return redirect()->route('users.show',[$user]);
+    }
+
+    public function edit(User $user)
+    {
+        $this->authorize('update',$user);
+        return view('users.edit',compact('user'));
+    }
+
+    public function update(User $user, Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            'password' => 'nullable|confirmed|min:6'
+        ]);
+
+        $this->authorize('update',$user);
+
+        $data = [];
+        $data['name'] = $request->name;
+
+        if($request->password) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        $user->update($data);
+
+        session()->flash('success','ä¸ªäººèµ„æ–™æ›´æ–°æˆåŠŸï¼');
+
+        return redirect()->route('users.show', $user->id);
     }
 }

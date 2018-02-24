@@ -7,6 +7,13 @@ use Auth;
 
 class SessionsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('guest',[
+            'only' => ['create']
+        ]);
+    }
+
     public function create()
     {
         return view('sessions.create');
@@ -20,12 +27,10 @@ class SessionsController extends Controller
         ]);
 
         if(Auth::attempt($credentials,$request->has('remember'))) {
-            //µÇÂ¼³É¹¦ºóµÄÏà¹Ø²Ù×÷¡£TODO£ºÖÐÎÄÏûÏ¢ÏÔÊ¾²»Õý³£
-            session()->flash('success','»¶Ó­»ØÀ´£¡');
-            return redirect()->route('users.show',[Auth::user()]);
+            session()->flash('success','æ¬¢è¿Žå›žæ¥ï¼');
+            return redirect()->intended(route('users.show',[Auth::user()]));
         } else {
-            //µÇÂ¼Ê§°ÜºóµÄÏà¹Ø²Ù×÷¡£TODO£ºÖÐÎÄÏûÏ¢ÏÔÊ¾²»Õý³£
-            session()->flash('danger','ºÜ±§Ç¸£¬ÄúµÄÓÊÏäºÍÃÜÂë²»Æ¥Åä');
+            session()->flash('danger','å¾ˆæŠ±æ­‰ï¼Œæ‚¨çš„é‚®ç®±å’Œå¯†ç ä¸åŒ¹é…');
             return redirect()->back();
         }
     }
@@ -33,7 +38,7 @@ class SessionsController extends Controller
     public function destroy()
     {
         Auth::logout();
-        session()->flash('success','ÄúÒÑ³É¹¦ÍË³ö£¡');
+        session()->flash('success','ï¿½ï¿½ï¿½Ñ³É¹ï¿½ï¿½Ë³ï¿½ï¿½ï¿½');
         return redirect('login');
     }
 }
